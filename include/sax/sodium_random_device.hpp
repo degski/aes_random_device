@@ -36,25 +36,18 @@ struct sodium_device {
     sodium_device ( ) {
         sodium_init ( );
         std::random_device std_dev;
-        unsigned char seed[ AES_STREAM_SEEDBYTES ];
-        unsigned char * p = seed;
-        for ( std::size_t n = ( AES_STREAM_SEEDBYTES / std_rdev_result_type_size ), i = 0; i < n; ++i ) {
-            result_type s = std_dev ( );
-            std::memcpy ( p, &s, std_rdev_result_type_size );
-            p += std_rdev_result_type_size;
-        }
-        aes_stream_init ( &state, seed );
+        result_type seed[ ( AES_STREAM_SEEDBYTES / sizeof ( result_type ) ) ];
+        for ( auto it = std::begin ( seed ), end = it + ( AES_STREAM_SEEDBYTES / sizeof ( result_type ) ); it != end; ++it )
+            *it = std_dev ( );
+        aes_stream_init ( &state, reinterpret_cast<unsigned char *> ( seed ) );
     }
 
     [[nodiscard]] result_type operator( ) ( ) const noexcept {
         if ( e == p ) {
-            aes_stream ( &state, buf, buf_len );
+            aes_stream ( &state, reinterpret_cast<unsigned char *> ( buf ), buf_len );
             p = buf;
         }
-        result_type r;
-        std::memcpy ( &r, p, sizeof ( result_type ) );
-        p += sizeof ( result_type );
-        return r;
+        return *p++;
     }
 
     void seed ( std::string const & token ) {
@@ -65,8 +58,8 @@ struct sodium_device {
     }
 
     alignas ( 64 ) mutable aes_stream_state state;
-    alignas ( 64 ) mutable unsigned char buf[ buf_len ];
-    mutable unsigned char *e = buf + buf_len, *p = e;
+    alignas ( 64 ) mutable result_type buf[ ( buf_len / ( sizeof ( result_type ) ) ) ];
+    mutable result_type *e = buf + ( buf_len / ( sizeof ( result_type ) ) ), *p = e;
 };
 } // namespace detail
 

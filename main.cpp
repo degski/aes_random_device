@@ -21,7 +21,8 @@
 #endif
 
 #include "include/sax/sodium_random_device.hpp"
-#include "include/sax/randen_random_device.hpp"
+// #include "include/sax/randen_random_device.hpp"
+#include <randen.hpp>
 
 int main ( ) {
 
@@ -89,7 +90,7 @@ int main ( ) {
     }
 
     {
-        sax::ran_random_device ran_rng;
+        randen::Randen<std::uint64_t> ran_rng;
 
         std::uint64_t r = 0;
 

@@ -11,7 +11,7 @@
 #include <random>
 #include <string>
 
-#include "randen_random_device/randen.h"
+#include <randen.hpp>
 
 #ifndef SAX_RANDEN_RANDOM_DEVICE_USE_TLS
 #    define SAX_RANDEN_RANDOM_DEVICE_USE_TLS 1
@@ -26,7 +26,7 @@ namespace detail {
 
 struct randen_device {
 
-    static constexpr std::size_t buf_len                   = 8'192;
+    static constexpr std::size_t buf_len                   = 4'096;
     static constexpr std::size_t std_rdev_result_type_size = sizeof ( std::random_device::result_type );
 
     using randen_state = RandenState;
