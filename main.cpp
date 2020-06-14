@@ -21,10 +21,11 @@
 #endif
 
 #include "include/sax/sodium_random_device.hpp"
+#include "include/sax/randen_random_device.hpp"
 
 int main ( ) {
 
-    constexpr std::uint64_t N = 1'024'000 * 2;
+    constexpr std::uint64_t N = 2'048'000;
 
     {
         sax::aes_random_device aes_rng;
@@ -85,6 +86,26 @@ int main ( ) {
         std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * 0.001 ) );
 
         std::cout << "result std::mt19937_64        " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
+    }
+
+    {
+        sax::ran_random_device ran_rng;
+
+        std::uint64_t r = 0;
+
+        plf::nanotimer t;
+
+        for ( std::uint64_t i = 0; i < 10'000; ++i )
+            r += ran_rng ( );
+
+        t.start ( );
+
+        for ( std::uint64_t i = 0; i < N; ++i )
+            r += ran_rng ( );
+
+        std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * 0.001 ) );
+
+        std::cout << "result sax::ran_random_device " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
     }
 
     return EXIT_SUCCESS;

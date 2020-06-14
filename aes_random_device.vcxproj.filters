@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\sax\randen-rng\randen.c">
+    <ClCompile Include="include\sax\randen_random_device\randen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,7 +26,10 @@
     <ClInclude Include="include\sax\sodium_random_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="randen-rng\randen.h">
+    <ClInclude Include="include\sax\randen_random_device\randen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sax\randen_random_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
