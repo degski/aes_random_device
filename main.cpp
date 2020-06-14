@@ -24,7 +24,7 @@
 
 int main ( ) {
 
-    constexpr int N = 1'024'000;
+    constexpr std::uint64_t N = 1'024'000 * 2;
 
     {
         sax::aes_random_device aes_rng;
@@ -33,9 +33,12 @@ int main ( ) {
 
         plf::nanotimer t;
 
+        for ( std::uint64_t i = 0; i < 10'000; ++i )
+            r += aes_rng ( );
+
         t.start ( );
 
-        for ( int i = 0; i < N; ++i )
+        for ( std::uint64_t i = 0; i < N; ++i )
             r += aes_rng ( );
 
         std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * 0.001 ) );
@@ -44,15 +47,19 @@ int main ( ) {
     }
 
     {
-        sax::sfc64 sfc_rng;
+        sax::aes_random_device aes_rng;
+        sax::sfc64 sfc_rng ( aes_rng ( ), aes_rng ( ), aes_rng ( ), aes_rng ( ) );
 
         std::uint64_t r = 0;
 
         plf::nanotimer t;
 
+        for ( std::uint64_t i = 0; i < 10'000; ++i )
+            r += sfc_rng ( );
+
         t.start ( );
 
-        for ( int i = 0; i < N; ++i )
+        for ( std::uint64_t i = 0; i < N; ++i )
             r += sfc_rng ( );
 
         std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * 0.001 ) );
@@ -61,15 +68,18 @@ int main ( ) {
     }
 
     {
-        std::mt19937_64 mt_rng;
+        sax::aes_random_device aes_rng;
+        std::mt19937_64 mt_rng ( aes_rng ( ) );
 
         std::uint64_t r = 0;
+
+        mt_rng.discard ( 10'000 );
 
         plf::nanotimer t;
 
         t.start ( );
 
-        for ( int i = 0; i < N; ++i )
+        for ( std::uint64_t i = 0; i < N; ++i )
             r += mt_rng ( );
 
         std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * 0.001 ) );
