@@ -24,7 +24,31 @@
 // #include "include/sax/randen_random_device.hpp"
 #include <randen.hpp>
 
+#include <sodium.h>
+
+// void crypto_stream_xchacha20_keygen ( unsigned char k[ crypto_stream_xchacha20_KEYBYTES ] );
+// int crypto_stream_xchacha20(unsigned char *c, unsigned long long clen, const unsigned char *n, const unsigned char *k);
+
+// int crypto_stream_xchacha20_xor ( unsigned char * c, const unsigned char * m, unsigned long long mlen, const unsigned char * n,
+//                                  const unsigned char * k );
+
 int main ( ) {
+
+    unsigned char message[] = { 'd', 'e', 'g', 's', 'k', 'i', '@', 'g', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm' };
+    unsigned char encrypt[ 1'024 ];
+
+    sax::aes_random_device aes_rng;
+
+    uint64_t initial_counter = aes_rng ( );
+
+    unsigned char key[ crypto_stream_xchacha20_KEYBYTES ];
+    crypto_stream_xchacha20_keygen ( key );
+
+    unsigned char nounce[ crypto_stream_xchacha20_NONCEBYTES ] = { };
+
+    crypto_stream_xchacha20_xor_ic ( encrypt, message, sizeof ( message ), nounce, aes_rng ( ), key );
+
+    /*
 
     constexpr std::uint64_t N = 2'048'000;
 
@@ -49,7 +73,6 @@ int main ( ) {
     }
 
     {
-        sax::aes_random_device aes_rng;
         sax::sfc64 sfc_rng ( aes_rng ( ), aes_rng ( ), aes_rng ( ), aes_rng ( ) );
 
         std::uint64_t r = 0;
@@ -70,7 +93,6 @@ int main ( ) {
     }
 
     {
-        sax::aes_random_device aes_rng;
         std::mt19937_64 mt_rng ( aes_rng ( ) );
 
         std::uint64_t r = 0;
@@ -108,6 +130,8 @@ int main ( ) {
 
         std::cout << "result sax::ran_random_device " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
     }
+
+    */
 
     return EXIT_SUCCESS;
 }

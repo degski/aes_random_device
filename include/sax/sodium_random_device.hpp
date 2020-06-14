@@ -13,7 +13,7 @@
 
 #include "sodium_random_device/aes-stream.hpp" // ensure aes-stream is compiled with the same parameters!
 
-extern "C" void sodium_init ( );
+extern "C" int sodium_init ( void );
 
 #ifndef SAX_AES_RANDOM_DEVICE_USE_TLS
 #    define SAX_AES_RANDOM_DEVICE_USE_TLS 1
