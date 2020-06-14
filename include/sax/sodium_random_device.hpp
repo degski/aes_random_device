@@ -28,7 +28,7 @@ namespace detail {
 
 struct sodium_device {
 
-    static constexpr std::size_t buf_len                   = 4'096;
+    static constexpr std::size_t buf_len                   = 8'192;
     static constexpr std::size_t std_rdev_result_type_size = sizeof ( std::random_device::result_type );
 
     using result_type = std::uint64_t;
