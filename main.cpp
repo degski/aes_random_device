@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <array>
 #include <iostream>
 
 #ifdef NDEBUG
@@ -17,8 +18,11 @@
 #endif
 
 #include "include/sax/sodium_random_device.hpp"
+#include "include/sax/sodium_random_device/machine_guid.hpp"
 
 int main ( ) {
+
+    std::cout << sax::machine_guid ( ) << '\n';
 
     sax::aes_random_device aes_rng;
 

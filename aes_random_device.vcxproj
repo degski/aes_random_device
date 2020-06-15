@@ -220,6 +220,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\sax\sodium_random_device.hpp" />
+    <ClInclude Include="include\sax\sodium_random_device\machine_guid.hpp" />
+    <ClInclude Include="include\sax\sodium_random_device\uniform_int_distribution.hpp" />
+    <ClInclude Include="include\sax\sodium_random_device\utf8conv.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />

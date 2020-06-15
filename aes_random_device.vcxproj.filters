@@ -23,6 +23,15 @@
     <ClInclude Include="include\sax\sodium_random_device.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\sax\sodium_random_device\machine_guid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sax\sodium_random_device\uniform_int_distribution.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sax\sodium_random_device\utf8conv.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="_clang-format" />
