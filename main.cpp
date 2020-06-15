@@ -27,28 +27,47 @@
 
 #include <sodium.h>
 
-using crypto_stream_chacha20_ietf_key_type    = std::array<unsigned char, crypto_stream_chacha20_ietf_KEYBYTES>;
-using crypto_stream_chacha20_ietf_nonce_type  = std::array<unsigned char, crypto_stream_chacha20_NONCEBYTES>;
-using crypto_stream_chacha20_ietf_stream_type = std::array<unsigned char, 4'096>;
+using crypto_stream_chacha20_key_type   = std::array<std::uint64_t, crypto_stream_chacha20_KEYBYTES / 8>;
+using crypto_stream_chacha20_nonce_type = std::array<std::uint8_t, crypto_stream_chacha20_NONCEBYTES>;
 
-crypto_stream_chacha20_ietf_key_type crypto_stream_chacha20_ietf_rekey ( ) noexcept {
-    crypto_stream_chacha20_ietf_key_type k;
-    crypto_stream_chacha20_ietf_keygen ( k.data ( ) );
+template<std::size_t BufferSize>
+using crypto_stream_chacha20_stream_type = std::array<std::uint64_t, BufferSize / 8>;
+
+crypto_stream_chacha20_key_type crypto_stream_chacha20_rekey ( ) noexcept {
+    crypto_stream_chacha20_key_type k;
+    crypto_stream_chacha20_keygen ( reinterpret_cast<unsigned char *> ( k.data ( ) ) );
     return k;
 }
 
 int main ( ) {
 
-    crypto_stream_chacha20_ietf_stream_type stream;
+    // static constexpr std::size_t
 
-    crypto_stream_chacha20_ietf_key_type key     = crypto_stream_chacha20_ietf_rekey ( );
-    crypto_stream_chacha20_ietf_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
+    constexpr std::uint64_t N = 2'048'000 / ( 8'192 / 8 );
 
-    crypto_stream_chacha20_ietf ( stream.data ( ), stream.size ( ), nonce.data ( ), key.data ( ) );
+    crypto_stream_chacha20_stream_type<8'192> stream;
+
+    crypto_stream_chacha20_key_type key     = crypto_stream_chacha20_rekey ( );
+    crypto_stream_chacha20_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
+
+    std::uint64_t c = N, r = 0, *e = stream.data ( ) + stream.size ( ), *p = e;
+
+    plf::nanotimer t;
+    t.start ( );
+
+    while ( c-- ) {
+        while ( e != p )
+            r += *p++;
+        crypto_stream_chacha20 ( reinterpret_cast<unsigned char *> ( stream.data ( ) ), stream.size ( ) * 8, nonce.data ( ),
+                                 reinterpret_cast<unsigned char *> ( key.data ( ) ) );
+        p = stream.data ( );
+    }
+
+    std::uint64_t d = t.get_elapsed_ns ( ) * ( 1 / ( N * ( ( 8'192 / 8 ) * 0.001 ) ) );
+
+    std::cout << "result sax::chacha20_random_device " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
 
     /*
-
-    constexpr std::uint64_t N = 2'048'000;
 
     {
         sax::aes_random_device aes_rng;
