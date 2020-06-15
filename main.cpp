@@ -40,6 +40,13 @@ template<typename StreamType>
     return stream;
 }
 
+// tl;dr http://0pointer.de/blog/projects/ids.html
+//
+// Use /var/lib/dbus/machine-id!
+// Use getuid()!
+//
+// And forget about the rest, in particular the host name, or the hardware IDs such as DMI.
+
 int main ( ) {
 
     constexpr std::uint64_t N = 1'024'000;
