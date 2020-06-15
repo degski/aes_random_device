@@ -45,11 +45,7 @@ struct sodium_device {
         if ( e == p ) {
             aes_stream ( &state, reinterpret_cast<unsigned char *> ( buf ), buf_len );
             p = buf;
-            std::minstd_rand prng ( p[ 0 ] );
-            std::uniform_int_distribution<std::size_t> distribution{ 0, sizeof ( aes_stream_state ) - 1 };
-            if ( ( static_cast<double> ( p[ distribution ( prng ) ] ) / static_cast<double> ( std::random_device::max ( ) ) ) <
-                 0.01 )
-                std::swap ( p[ distribution ( prng ) ], p[ distribution ( prng ) ] );
+            perturbe ( state );
         }
         return *p++;
     }
@@ -59,6 +55,20 @@ struct sodium_device {
         unsigned char seed[ AES_STREAM_SEEDBYTES ] = { 0 };
         std::memcpy ( seed, token.data ( ), token.length ( ) );
         aes_stream_init ( &state, seed );
+    }
+
+    void perturbe ( aes_stream_state & state_ ) const noexcept {
+        std::minstd_rand prng{ p[ 0 ] };
+        if ( std::bernoulli_distribution{ 0.05 }( prng ) ) {
+            std::uniform_int_distribution<std::size_t> sdis{ 0, ( ( sizeof ( aes_stream_state ) / 8 ) - 1 ) };
+            std::size_t const s = sdis ( prng ) * 8, d = sdis ( prng ) * 8;
+            if ( s != d ) {           // std::swap - type-punning
+                unsigned char t[ 8 ]; // uint64_t
+                std::memcpy ( &t, &state + s, 8 );
+                std::memcpy ( &state + s, &state + d, 8 );
+                std::memcpy ( &state + d, &t, 8 );
+            }
+        }
     }
 
     alignas ( 64 ) mutable aes_stream_state state;
