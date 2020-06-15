@@ -27,14 +27,14 @@
 
 #include <sodium.h>
 
-using crypto_stream_chacha20_key_type   = std::array<std::uint64_t, crypto_stream_chacha20_KEYBYTES / 8>;
-using crypto_stream_chacha20_nonce_type = std::array<std::uint8_t, crypto_stream_chacha20_NONCEBYTES>;
+using chacha20_key_type   = std::array<std::uint64_t, crypto_stream_chacha20_KEYBYTES / 8>;
+using chacha20_nonce_type = std::array<std::uint8_t, crypto_stream_chacha20_NONCEBYTES>;
 
 template<std::size_t BufferSize>
-using crypto_stream_chacha20_stream_type = std::array<std::uint64_t, BufferSize / 8>;
+using chacha20_stream_type = std::array<std::uint64_t, BufferSize / 8>;
 
-crypto_stream_chacha20_key_type crypto_stream_chacha20_rekey ( ) noexcept {
-    crypto_stream_chacha20_key_type k;
+[[nodiscard]] chacha20_key_type chacha20_stream_rekey ( ) noexcept {
+    chacha20_key_type k;
     crypto_stream_chacha20_keygen ( reinterpret_cast<unsigned char *> ( k.data ( ) ) );
     return k;
 }
@@ -45,10 +45,10 @@ int main ( ) {
 
     constexpr std::uint64_t N = 2'048'000 / ( 8'192 / 8 );
 
-    crypto_stream_chacha20_stream_type<8'192> stream;
+    chacha20_stream_type<8'192> stream;
 
-    crypto_stream_chacha20_key_type key     = crypto_stream_chacha20_rekey ( );
-    crypto_stream_chacha20_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
+    chacha20_key_type key     = chacha20_stream_rekey ( );
+    chacha20_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
 
     std::uint64_t c = N, r = 0, *e = stream.data ( ) + stream.size ( ), *p = e;
 
