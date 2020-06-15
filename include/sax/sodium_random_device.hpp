@@ -35,7 +35,6 @@ struct sodium_device {
 
     sodium_device ( ) {
         sodium_init ( );
-        std::random_device std_dev;
         result_type seed[ ( AES_STREAM_SEEDBYTES / sizeof ( result_type ) ) ];
         for ( auto it = std::begin ( seed ), end = it + ( AES_STREAM_SEEDBYTES / sizeof ( result_type ) ); it != end; ++it )
             *it = std_dev ( );
@@ -46,6 +45,11 @@ struct sodium_device {
         if ( e == p ) {
             aes_stream ( &state, reinterpret_cast<unsigned char *> ( buf ), buf_len );
             p = buf;
+            std::minstd_rand prng ( p[ 0 ] );
+            std::uniform_int_distribution<std::size_t> distribution{ 0, sizeof ( aes_stream_state ) - 1 };
+            if ( ( static_cast<double> ( p[ distribution ( prng ) ] ) / static_cast<double> ( std::random_device::max ( ) ) ) <
+                 0.01 )
+                std::swap ( p[ distribution ( prng ) ], p[ distribution ( prng ) ] );
         }
         return *p++;
     }
@@ -60,6 +64,7 @@ struct sodium_device {
     alignas ( 64 ) mutable aes_stream_state state;
     alignas ( 64 ) mutable result_type buf[ ( buf_len / ( sizeof ( result_type ) ) ) ];
     mutable result_type *e = buf + ( buf_len / ( sizeof ( result_type ) ) ), *p = e;
+    mutable std::random_device std_dev;
 };
 } // namespace detail
 
