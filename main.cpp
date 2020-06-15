@@ -27,14 +27,9 @@
 
 #include <sodium.h>
 
-// void crypto_stream_xchacha20_keygen ( unsigned char k[ crypto_stream_xchacha20_KEYBYTES ] );
-// int crypto_stream_xchacha20(unsigned char *c, unsigned long long clen, const unsigned char *n, const unsigned char *k);
-
-// int crypto_stream_xchacha20_xor ( unsigned char * c, const unsigned char * m, unsigned long long mlen, const unsigned char * n,
-//                                  const unsigned char * k );
-
-using crypto_stream_chacha20_ietf_key_type   = std::array<unsigned char, crypto_stream_chacha20_ietf_KEYBYTES>;
-using crypto_stream_chacha20_ietf_nonce_type = std::array<unsigned char, crypto_stream_chacha20_NONCEBYTES>;
+using crypto_stream_chacha20_ietf_key_type    = std::array<unsigned char, crypto_stream_chacha20_ietf_KEYBYTES>;
+using crypto_stream_chacha20_ietf_nonce_type  = std::array<unsigned char, crypto_stream_chacha20_NONCEBYTES>;
+using crypto_stream_chacha20_ietf_stream_type = std::array<unsigned char, 4'096>;
 
 crypto_stream_chacha20_ietf_key_type crypto_stream_chacha20_ietf_rekey ( ) noexcept {
     crypto_stream_chacha20_ietf_key_type k;
@@ -42,18 +37,14 @@ crypto_stream_chacha20_ietf_key_type crypto_stream_chacha20_ietf_rekey ( ) noexc
     return k;
 }
 
-#include <exper
-
 int main ( ) {
 
-    unsigned char message[] = { 'd', 'e', 'g', 's', 'k', 'i', '@', 'g', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm' };
-    unsigned char encrypt[ 1'024 ];
+    crypto_stream_chacha20_ietf_stream_type stream;
 
     crypto_stream_chacha20_ietf_key_type key     = crypto_stream_chacha20_ietf_rekey ( );
-    crypto_stream_chacha20_ietf_nonce_type nonce = { };
+    crypto_stream_chacha20_ietf_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
 
-    crypto_stream_chacha20_ietf_xor_ic ( encrypt, message, sizeof ( message ), nonce.data ( ),
-                                         std::random_device{ }.operator( ) ( ), key.data ( ) );
+    crypto_stream_chacha20_ietf ( stream.data ( ), stream.size ( ), nonce.data ( ), key.data ( ) );
 
     /*
 
