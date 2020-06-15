@@ -58,16 +58,12 @@ struct sodium_device {
     }
 
     void perturbe ( aes_stream_state & state_ ) const noexcept {
-        std::minstd_rand prng{ p[ 0 ] };
+        std::minstd_rand prng{ static_cast<std::uint32_t> ( p[ 0 ] ) };
         if ( std::bernoulli_distribution{ 0.05 }( prng ) ) {
-            std::uniform_int_distribution<std::size_t> sdis{ 0, ( ( sizeof ( aes_stream_state ) / 8 ) - 1 ) };
-            std::size_t const s = sdis ( prng ) * 8, d = sdis ( prng ) * 8;
-            if ( s != d ) {           // std::swap - type-punning
-                unsigned char t[ 8 ]; // uint64_t
-                std::memcpy ( t, &state + s, 8 );
-                std::memcpy ( &state + s, &state + d, 8 );
-                std::memcpy ( &state + d, t, 8 );
-            }
+            std::uniform_int_distribution<std::size_t> sdis{ 0, ( sizeof ( aes_stream_state ) - 1 ) };
+            std::size_t const s = sdis ( prng ), d = sdis ( prng );
+            if ( s != d )
+                std::swap ( state.opaque[ s ], state.opaque[ d ] );
         }
     }
 
@@ -101,5 +97,4 @@ class aes_random_device {
     [[nodiscard]] static constexpr result_type min ( ) { return result_type{ 0x0000'0000'0000'0000 }; }
     [[nodiscard]] static constexpr result_type max ( ) { return result_type{ 0xFFFF'FFFF'FFFF'FFFF }; }
 };
-
 } // namespace sax

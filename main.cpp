@@ -42,9 +42,11 @@ template<typename StreamType>
 
 int main ( ) {
 
-    // static constexpr std::size_t
+    constexpr std::uint64_t N = 1'024'000;
 
-    constexpr std::uint64_t N = 2'048'000 / ( 8'192 / 8 );
+    sax::aes_random_device aes_rng;
+
+    /*
 
     chacha20_stream_type<8'192> stream = chacha20_stream_rekey<chacha20_stream_type<8'192>> ( );
 
@@ -75,10 +77,10 @@ int main ( ) {
 
     std::cout << "result sax::chacha20_random_device " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
 
-    /*
+    */
 
     {
-        sax::aes_random_device aes_rng;
+        // sax::aes_random_device aes_rng
 
         std::uint64_t r = 0;
 
@@ -155,8 +157,6 @@ int main ( ) {
 
         std::cout << "result sax::ran_random_device " << r << " in " << ( d / 1'000 ) << '.' << ( d % 1'000 ) << " ns/rn\n";
     }
-
-    */
 
     return EXIT_SUCCESS;
 }
