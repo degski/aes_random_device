@@ -33,10 +33,11 @@ using chacha20_nonce_type = std::array<std::uint8_t, crypto_stream_chacha20_NONC
 template<std::size_t BufferSize>
 using chacha20_stream_type = std::array<std::uint64_t, BufferSize / 8>;
 
-[[nodiscard]] chacha20_key_type chacha20_stream_rekey ( ) noexcept {
-    chacha20_key_type k;
-    crypto_stream_chacha20_keygen ( reinterpret_cast<unsigned char *> ( k.data ( ) ) );
-    return k;
+template<typename StreamType>
+[[nodiscard]] StreamType chacha20_stream_rekey ( ) noexcept {
+    StreamType stream;
+    crypto_stream_chacha20_keygen ( reinterpret_cast<unsigned char *> ( stream.data ( ) ) );
+    return stream;
 }
 
 int main ( ) {
@@ -45,9 +46,16 @@ int main ( ) {
 
     constexpr std::uint64_t N = 2'048'000 / ( 8'192 / 8 );
 
-    chacha20_stream_type<8'192> stream;
+    chacha20_stream_type<8'192> stream = chacha20_stream_rekey<chacha20_stream_type<8'192>> ( );
 
-    chacha20_key_type key     = chacha20_stream_rekey ( );
+    unsigned char k[ 32 ] = { 'd', 'e', 'g', 's', 'k', 'i', '@', 'g', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm',
+                              'd', 'e', 'g', 's', 'k', 'i', '@', 'g', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm' };
+
+    chacha20_key_type key;
+
+    std::memcpy ( key.data ( ), k, key.size ( ) / 2 );
+    std::memcpy ( key.data ( ) + key.size ( ) / 2, k + key.size ( ) / 2, key.size ( ) / 2 );
+
     chacha20_nonce_type nonce = { '*', 'd', 'e', 'g', 's', 'k', 'i', '*' };
 
     std::uint64_t c = N, r = 0, *e = stream.data ( ) + stream.size ( ), *p = e;
