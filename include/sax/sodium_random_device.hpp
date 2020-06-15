@@ -64,9 +64,9 @@ struct sodium_device {
             std::size_t const s = sdis ( prng ) * 8, d = sdis ( prng ) * 8;
             if ( s != d ) {           // std::swap - type-punning
                 unsigned char t[ 8 ]; // uint64_t
-                std::memcpy ( &t, &state + s, 8 );
+                std::memcpy ( t, &state + s, 8 );
                 std::memcpy ( &state + s, &state + d, 8 );
-                std::memcpy ( &state + d, &t, 8 );
+                std::memcpy ( &state + d, t, 8 );
             }
         }
     }
