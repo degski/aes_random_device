@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include <array>
 #include <iostream>
 #include <random>
 
@@ -32,21 +33,27 @@
 // int crypto_stream_xchacha20_xor ( unsigned char * c, const unsigned char * m, unsigned long long mlen, const unsigned char * n,
 //                                  const unsigned char * k );
 
+using crypto_stream_chacha20_ietf_key_type   = std::array<unsigned char, crypto_stream_chacha20_ietf_KEYBYTES>;
+using crypto_stream_chacha20_ietf_nonce_type = std::array<unsigned char, crypto_stream_chacha20_NONCEBYTES>;
+
+crypto_stream_chacha20_ietf_key_type crypto_stream_chacha20_ietf_rekey ( ) noexcept {
+    crypto_stream_chacha20_ietf_key_type k;
+    crypto_stream_chacha20_ietf_keygen ( k.data ( ) );
+    return k;
+}
+
+#include <exper
+
 int main ( ) {
 
     unsigned char message[] = { 'd', 'e', 'g', 's', 'k', 'i', '@', 'g', 'm', 'a', 'i', 'l', '.', 'c', 'o', 'm' };
     unsigned char encrypt[ 1'024 ];
 
-    sax::aes_random_device aes_rng;
+    crypto_stream_chacha20_ietf_key_type key     = crypto_stream_chacha20_ietf_rekey ( );
+    crypto_stream_chacha20_ietf_nonce_type nonce = { };
 
-    uint64_t initial_counter = aes_rng ( );
-
-    unsigned char key[ crypto_stream_xchacha20_KEYBYTES ];
-    crypto_stream_xchacha20_keygen ( key );
-
-    unsigned char nounce[ crypto_stream_xchacha20_NONCEBYTES ] = { };
-
-    crypto_stream_xchacha20_xor_ic ( encrypt, message, sizeof ( message ), nounce, aes_rng ( ), key );
+    crypto_stream_chacha20_ietf_xor_ic ( encrypt, message, sizeof ( message ), nonce.data ( ),
+                                         std::random_device{ }.operator( ) ( ), key.data ( ) );
 
     /*
 
