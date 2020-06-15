@@ -50,6 +50,7 @@ struct sodium_device {
         if ( e == p ) {
             aes_stream ( &state, buf, buf_len );
             p = buf;
+            perturbe ( state );
         }
         result_type r;
         std::memcpy ( &r, p, sizeof ( result_type ) );
@@ -62,6 +63,20 @@ struct sodium_device {
         unsigned char seed[ AES_STREAM_SEEDBYTES ] = { 0 };
         std::memcpy ( seed, token.data ( ), token.length ( ) );
         aes_stream_init ( &state, seed );
+    }
+
+    // In 5% of all buffer-refills, the generation of PRN's will be followed by a random swap of 2 bytes in the state. The source of
+    // entropy is the bits in the buffer.
+    void perturbe ( aes_stream_state & state_ ) const noexcept {
+        std::uint32_t seed;
+        std::memcpy ( &seed, p, 4 );
+        std::minstd_rand prng{ seed };
+        if ( std::bernoulli_distribution{ 0.05 }( prng ) ) {
+            std::uniform_int_distribution<std::size_t> sdis{ 0, ( sizeof ( aes_stream_state ) - 1 ) };
+            std::size_t const s = sdis ( prng ), d = sdis ( prng );
+            if ( s != d )
+                std::swap ( state.opaque[ s ], state.opaque[ d ] );
+        }
     }
 
     alignas ( 64 ) mutable aes_stream_state state;
