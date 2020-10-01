@@ -3,6 +3,12 @@
 //
 // Copyright (c) 2020 degski
 
+/*
+    C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan_cxx-x86_64.lib
+    C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan-preinit-x86_64.lib
+    C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan-x86_64.lib
+*/
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>

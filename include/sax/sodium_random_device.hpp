@@ -65,8 +65,8 @@ struct sodium_device {
         aes_stream_init ( &state, seed );
     }
 
-    // In 5% of all buffer-refills, the generation of PRN's will be followed by a random swap of 2 bytes in the state. The source of
-    // entropy is the bits in the buffer.
+    // In 5% of all buffer-refills, the generation of PRN's will be followed by a random swap of 2 bytes in the state.
+    // The source of entropy is the bits in the buffer.
     void perturbe ( aes_stream_state & state_ ) const noexcept {
         std::uint32_t seed;
         std::memcpy ( &seed, p, 4 );
