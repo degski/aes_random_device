@@ -24,15 +24,15 @@
 #endif
 
 #include "include/sax/sodium_random_device.hpp"
-#include "include/sax/sodium_random_device/machine_guid.hpp"
+//#include "include/sax/sodium_random_device/machine_guid.hpp"
 
 int main ( ) {
 
-    std::cout << sax::machine_guid ( ) << '\n';
+    //std::cout << sax::machine_guid ( ) << '\n';
 
     sax::aes_random_device aes_rng;
 
-    for ( int i = 0; i < 8'384; ++i )
+    for ( int i = 0; i < 12'252; ++i )
         std::cout << aes_rng ( ) << ' ';
     std::cout << '\n';
 

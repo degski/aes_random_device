@@ -206,13 +206,16 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64_win\vc_mt\tbb.lib;libsodium.lib;aes-stream-msvc142-ltcg-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64_win\vc_mt\tbb.lib;libsodium.lib;aes-stream-msvc142-ltcg-s.lib;C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan_cxx-x86_64.lib
+;C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan-preinit-x86_64.lib
+;C:\Program Files\LLVM\lib\clang\10.0.0\lib\windows\clang_rt.asan-x86_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

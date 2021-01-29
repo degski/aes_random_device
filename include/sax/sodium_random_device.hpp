@@ -15,7 +15,7 @@
 
 extern "C" int sodium_init ( void );
 
-#ifndef SAX_AES_RANDOM_DEVICE_USE_TLS
+#ifdef SAX_AES_RANDOM_DEVICE_USE_TLS
 #    define SAX_AES_RANDOM_DEVICE_USE_TLS 1
 #    define SAX_AES_RANDOM_DEVICE_TLS thread_local
 #else
@@ -34,14 +34,14 @@ struct sodium_device {
     using result_type = std::uint64_t;
 
     sodium_device ( ) {
-        sodium_init ( );
+        // sodium_init ( );
         std::random_device std_dev;
         unsigned char seed[ AES_STREAM_SEEDBYTES ];
-        unsigned char * p = seed;
+        unsigned char * p_ = seed;
         for ( std::size_t n = ( AES_STREAM_SEEDBYTES / std_rdev_result_type_size ), i = 0; i < n; ++i ) {
             result_type s = std_dev ( );
-            std::memcpy ( p, &s, std_rdev_result_type_size );
-            p += std_rdev_result_type_size;
+            std::memcpy ( p_, &s, std_rdev_result_type_size );
+            p_ += std_rdev_result_type_size;
         }
         aes_stream_init ( &state, seed );
     }
@@ -73,9 +73,11 @@ struct sodium_device {
         std::minstd_rand prng{ seed };
         if ( std::bernoulli_distribution{ 0.05 }( prng ) ) {
             std::uniform_int_distribution<std::size_t> sdis{ 0, ( sizeof ( aes_stream_state ) - 1 ) };
-            std::size_t const s = sdis ( prng ), d = sdis ( prng );
-            if ( s != d )
-                std::swap ( state.opaque[ s ], state.opaque[ d ] );
+            std::size_t const s = sdis ( prng );
+            std::size_t d       = sdis ( prng );
+            while ( s == d )
+                d = sdis ( prng );
+            std::swap ( state.opaque[ s ], state.opaque[ d ] );
         }
     }
 
